@@ -130,3 +130,6 @@ Parameters:
   xyswap
 	interchange the X and Y co-ordinates -- no longer used or needed
 	if the new linear calibration utility ts_calibrate is used.
+
+Read BUILD-ANDROID for istruction as build tslib for Android
+
