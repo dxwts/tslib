@@ -1,0 +1,56 @@
+Prepare Android enviroment follow this link:
+http://source.android.com/source/downloading.html
+require many time you need download about 8.5GB
+
+cd <dir enviroment base>/external/
+git clone https://github.com/etmatrix/tslib.git
+
+cd tslib
+autoreconf -ivs
+./configure
+
+cd ..
+# build all files
+make libts
+make ts/plugins/input
+make ts/plugins/pthres
+make ts/plugins/dejitter
+make ts/plugins/linear
+make ts/plugins/variance
+make ts_calibrate
+make ts_test
+
+##############
+# test tslib #
+##############
+
+# push all files
+adb push out/target/product/generic/system/lib/libts.so /system/lib/libts.so
+adb push out/target/product/generic/system/lib/ts/plugins/dejitter.so /system/lib/ts/plugins/dejitter.so
+adb push out/target/product/generic/system/lib/ts/plugins/input.so /system/lib/ts/plugins/input.so
+adb push out/target/product/generic/system/lib/ts/plugins/linear.so /system/lib/ts/plugins/linear.so
+adb push out/target/product/generic/system/lib/ts/plugins/pthres.so /system/lib/ts/plugins/pthres.so
+adb push out/target/product/generic/system/lib/ts/plugins/variance.so /system/lib/ts/plugins/variance.so
+adb push out/target/product/generic/system/bin/ts_calibrate /system/bin/ts_calibrate
+adb push out/target/product/generic/system/bin/ts_test /system/bin/ts_test
+
+# change file external/tslib/etc/ts.conf as need
+adb push external/tslib/etc/ts.conf /system/etc/ts.conf
+
+adb shell
+
+# android shell
+
+stop zygote
+export TSLIB_TSDEVICE=/dev/input/event3
+export TSLIB_CALIBFILE=/system/etc/pointercal
+export TSLIB_CONFFILE=/system/etc/ts.conf
+export TSLIB_PLUGINDIR=/system/lib/ts/plugins
+export TSLIB_FBDEVICE=/dev/graphics/fb0
+
+# calibrate touch
+ts_calibrate
+
+# test calibration data
+ts_test
+
